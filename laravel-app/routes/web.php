@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Session;
 // Alleen voor ingelogde kinderen
 Route::get('/kinds/{id}', [KindController::class, 'show']);
 Route::middleware('kind')->group(function () {
-    Route::match(['get', 'post'], '/opdracht', function (Request $request) {
+    Route::match(['get', 'post'], '/tafeltje', function (Request $request) {
         $tafels = App\Models\Tafel::all();
         $vragen = [];
         $gekozenTafel = null;

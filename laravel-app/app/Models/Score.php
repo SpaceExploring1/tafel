@@ -15,7 +15,7 @@ class Score extends Authenticatable
     ];
     public function tafel() // PK veranderd van idTafel naar id_Tafel
     {
-        return $this->belongsTo(Tafel::class, 'tafeltje');
+        return $this->belongsTo(tafel::class, 'tafels');
     }
 
     public function kindScores() // PK veranderd van idScore naar id_Score

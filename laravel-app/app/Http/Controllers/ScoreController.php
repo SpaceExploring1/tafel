@@ -4,58 +4,63 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Score;
+use App\Models\Kind;
 
 class ScoreController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        return Score::all();
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validation = $request->validate([
-            'idTafeltje' => 'required|integer',
+            'idKind' => 'required|integer|exists:kind,idKind',
             'score' => 'required|integer',
+            'questions' => 'required|array',
         ]);
+
+        $score = Score::create([
+            'idKind' => $validation['idKind'],
+            'score' => $validation['score'],
+        ]);
+
+        return response()->json($score, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
+    public function checkQuestions(Request $request)
     {
-        $score = Score::findOrFail($id);
-        return response()->json($score);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
-    {
-        $score = Score::findOrFail($id);
         $validation = $request->validate([
-            'idTafeltje' => 'sometimes|integer',
-            'score' => 'sometimes|integer',
+            'idKind' => 'required|integer|exists:kind,idKind',
+            'answers' => 'required|array',
         ]);
-        $score->update($validation);
-        return redirect()->back()->with('success', 'Bijgewerkt');
+
+        $kind = Kind::findOrFail($validation['idKind']);
+        $totalScore = 0;
+        $questions = [];
+
+        for ($i = 0; $i < 20; $i++) {
+            $num1 = rand(2, 10);
+            $num2 = rand(2, 10);
+            $correctAnswer = $num1 * $num2;
+            $userAnswer = $validation['answers'][$i] ?? null;
+            $isCorrect = $userAnswer == $correctAnswer;
+            if ($isCorrect) $totalScore++;
+            $questions[] = [
+                'question' => "$num1 × $num2",
+                'user_answer' => $userAnswer,
+                'correct_answer' => $correctAnswer,
+                'is_correct' => $isCorrect,
+            ];
+        }
+
+        $score = Score::updateOrCreate(
+            ['idKind' => $kind->idKind],
+            ['score' => $totalScore]
+        );
+
+        return response()->json([
+            'score' => $score,
+            'questions' => $questions,
+            'total' => $totalScore . '/20',
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $score = Score::findOrFail($id);
-        $score->delete();
-        return response()->json(['message' => 'Verwijderd'], 204);
-    }
+    // Keep other methods (index, show, update, destroy) as needed
 }

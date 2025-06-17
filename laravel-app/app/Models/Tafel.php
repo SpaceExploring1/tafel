@@ -2,17 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 
-class Tafel extends Authenticatable
+class Tafel extends Model
 {
     protected $table = 'tafel';
-    protected $primaryKey = 'idTafeltje';
+    protected $primaryKey = 'idTafel';
     public $timestamps = true;
-    protected $fillable = ['nummer'];
 
-    public function scores() // PK veranderd van idTafel naar id_Tafel
-    {
-        return $this->hasMany(Score::class, 'tafeltje');
-    }
+    protected $fillable = ['nummer'];
 }

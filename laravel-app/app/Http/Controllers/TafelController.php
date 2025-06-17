@@ -12,7 +12,7 @@ class TafelController extends Controller
      */
     public function index()
     {
-        return Tafel::all();
+        return Tafel::all(); // Use Tafel::all() instead of tafels::all()
     }
 
     /**
@@ -23,6 +23,9 @@ class TafelController extends Controller
         $validation = $request->validate([
             'nummer' => 'required|integer',
         ]);
+
+        $tafel = Tafel::create($validation); // Save the validated data
+        return response()->json($tafel, 201); // Return the created resource
     }
 
     /**
@@ -30,8 +33,8 @@ class TafelController extends Controller
      */
     public function show($id)
     {
-        $Tafel = Tafel::findOrFail($id);
-        return response()->json($Tafel);
+        $tafel = Tafel::findOrFail($id);
+        return response()->json($tafel);
     }
 
     /**
@@ -39,11 +42,11 @@ class TafelController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $Tafel = Tafel::findOrFail($id);
+        $tafel = Tafel::findOrFail($id);
         $validation = $request->validate([
             'nummer' => 'sometimes|integer',
         ]);
-        $Tafel->update($validation);
+        $tafel->update($validation);
         return redirect()->back()->with('success', 'Bijgewerkt');
     }
 
@@ -52,8 +55,8 @@ class TafelController extends Controller
      */
     public function destroy($id)
     {
-        $Tafel = Tafel::findOrFail($id);
-        $Tafel->delete();
+        $tafel = Tafel::findOrFail($id);
+        $tafel->delete();
         return redirect()->back()->with('success', 'Verwijderd');
     }
 }
