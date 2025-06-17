@@ -1,11 +1,12 @@
+{{-- resources/views/tafels.blade.php --}}
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Tafels Oefenen</title>
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         .popup {
             display: none;
@@ -19,11 +20,16 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             z-index: 1000;
         }
-        .popup.show { display: block; }
-        .table-row { margin-bottom: 10px; }
+        .popup.show {
+            display: block;
+        }
+        .table-row {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
@@ -36,10 +42,12 @@
         </div>
     </nav>
 
-    <!-- Tafels Section -->
+    <!-- Main Container -->
     <div class="container mt-4">
         <h1>Tafels Oefenen</h1>
-        <div class="dropdown">
+
+        <!-- Dropdown for selecting tafel range -->
+        <div class="dropdown mb-3">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="tafelsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 Tafels
             </button>
@@ -51,48 +59,59 @@
                 <li><a class="dropdown-item" href="#">1-100*N</a></li>
             </ul>
         </div>
-        @if(!auth()->check())
-            <div id="loginPopup" class="popup">
-                <p>Log in om te oefenen!</p>
-                <a href="{{ route('login') }}" class="btn btn-primary">Login</a>
-            </div>
-        @endif
 
-        @if(auth()->check())
-            <form action="{{ route('tafels.check') }}" method="POST" class="mt-4">
-                @csrf
-                <input type="hidden" name="idKind" value="{{ auth()->user()->idKind }}">
-                @foreach($questions as $index => $question)
-                    <div class="row table-row">
-                        <div class="col-6">
-                            <input type="text" class="form-control" value="{{ $question['question'] }}" readonly>
-                        </div>
-                        <div class="col-6">
-                            <input type="number" name="answers[]" class="form-control" required>
-                        </div>
+        <!-- Popup for login -->
+        @guest
+        <div id="loginPopup" class="popup">
+            <p>Log in om te oefenen!</p>
+            <a href="{{ route('login') }}" class="btn btn-primary">Login</a>
+        </div>
+        @endguest
+
+        <!-- Questions form -->
+        @auth
+        <form action="{{ route('tafels.check') }}" method="POST" class="mt-4">
+            @csrf
+            <input type="hidden" name="idKind" value="{{ auth()->user()->idKind ?? '' }}">
+            @foreach($questions as $index => $question)
+                <div class="row table-row">
+                    <div class="col-6">
+                        <input type="text" class="form-control" value="{{ $question['question'] }}" readonly />
                     </div>
-                @endforeach
-                <button type="submit" class="btn btn-success mt-3">Controleer Antwoorden</button>
-            </form>
-            @if(isset($total))
-                <h3>Jouw Score: {{ $total }}</h3>
-            @endif
+                    <div class="col-6">
+                        <input type="number" name="answers[]" class="form-control" required />
+                    </div>
+                </div>
+            @endforeach
+            <button type="submit" class="btn btn-success mt-3">Controleer Antwoorden</button>
+        </form>
+
+        @if(isset($total))
+            <h3 class="mt-4">Jouw Score: {{ $total }}</h3>
         @endif
+        @endauth
+
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- Bootstrap JS bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
+        // Pass auth check result to JS
+        const isLoggedIn = @json(auth()->check());
+
         document.addEventListener('DOMContentLoaded', function() {
             const tafelsLinks = document.querySelectorAll('#tafelsDropdown .dropdown-item');
             tafelsLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
-                    if (!{{ auth()->check() ? 'true' : 'false' }}) {
+                    if (!isLoggedIn) {
                         e.preventDefault();
                         document.getElementById('loginPopup').classList.add('show');
                     }
+                    // TODO: Add logic here if logged in to change questions dynamically
                 });
             });
         });
     </script>
 </body>
+</html>
