@@ -12,7 +12,7 @@ class TafelController extends Controller
      */
     public function index()
     {
-        return Tafel::all(); // Use Tafel::all() instead of tafels::all()
+        return Tafel::all();
     }
 
     /**
@@ -24,8 +24,8 @@ class TafelController extends Controller
             'nummer' => 'required|integer',
         ]);
 
-        $tafel = Tafel::create($validation); // Save the validated data
-        return response()->json($tafel, 201); // Return the created resource
+        $tafel = Tafel::create($validation);
+        return response()->json($tafel, 201);
     }
 
     /**

@@ -11,13 +11,17 @@ use App\Http\Controllers\UsersController;
 use App\Models\Kind;
 use App\Models\KindScore;
 use App\Models\Score;
-
+use App\Models\Tafel;
 use Illuminate\Support\Facades\DB;
 //session
 use Illuminate\Support\Facades\Session;
 
 
 // Alleen voor ingelogde kinderen
+// routes/web.php
+Route::get('/', function () {
+    return view('welkom');
+});
 Route::get('/kinds/{id}', [KindController::class, 'show']);
 Route::middleware('kind')->group(function () {
     Route::match(['get', 'post'], '/tafeltje', function (Request $request) {
