@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tafel', function (Blueprint $table) {
-            $table->id('idTafeltje');
+        Schema::create('scores', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
-            $table->integer('nummer');
         });
     }
 
@@ -23,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('_tafel');
+        Schema::dropIfExists('scores');
     }
 };
